@@ -1,0 +1,7 @@
+#	
+Sample1	ATGC
+Sample2	ACTG
+Sample3	TGCA
+Sample4	CGAT
+Sample5	CATG
+Sample6	GTAC
