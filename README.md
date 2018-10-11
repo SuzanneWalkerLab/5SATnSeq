@@ -1,7 +1,7 @@
 # 5SATnSeq
 Scripts and files needed to reproduce the analyses described in !!!paper citation!!!. 
 
-Note: All python scripts were written for python 2.7 and require some or all of the following libraries: glob, numpy, pandas
+Note: All python scripts were written for python 2.7 and require some or all of the following libraries: glob, itertools, numpy, pandas, random, time, sys
 
 ## Sequence Data Processing
 
@@ -9,7 +9,7 @@ FASTQ files obtained from sequencing facility are processed using Galaxy and in-
 
 
 ### Files Needed
-- __*.FASTQ__ - The raw sequencing reads. Our FASTQs can be downloaded from the Sequence Reads Archive, accession ID ~. 
+- __*.FASTQ__ - The raw sequencing reads. Our FASTQs can be downloaded from the Sequence Reads Archive, accession ID !!!. 
 - __Galaxy-Workflow-TnSeq.ga__ - The workflow used in Galaxy to process the FASTQ files into SAM files. 
 - __Galaxy-SampleBarcodes.txt__ - An input for the Galaxy workflow that contains the six sample barcodes used to split the raw FASTQ from the pooled sample into the FASTQs for individual samples. 
 - __Galaxy-TransposonBarcodes.txt__ - An input for the Galaxy workflow that contains the six transposon barcodes used to split each individual sample FASTQ by transposon construct. 
@@ -28,22 +28,29 @@ FASTQ files obtained from sequencing facility are processed using Galaxy and in-
 
 ## Essential Gene Analysis
 
-We identified the essential genes using the TRANSIT software Gumbel method (1). The scripts below are those used to convert files so that they could be used with the TRANSIT software and to perform a permutation test to determine which genes have significant fitness differences across strains of S. aureus. 
+We identified the essential genes using the TRANSIT software Gumbel method (1). The scripts below are those used to convert files so that they could be used with the TRANSIT software and to perform a permutation test to determine which genes have significant fitness differences across strains of *S. aureus*. 
 
 ### Files Needed
-- __*.tabular__ - The tabular files acquired from processing the FASTQ files (see above)
+- __*.tabular__ - The tabular files acquired from processing the FASTQ files (see above).
 - __*.fasta__ - A chromosome nucleotide fasta for the genome you are mapping to. See paper methods for the NCBI accession numbers for the strains used.
 - __*.gff__ - A GFF file output from running Prokka (2) on the fasta files.
 - __make_prot_tables.py__ - A python script that converts the GFF files from Prokka into prot_table files for TRANSIT. 
 - __findTASites.py__ - For each fasta file in the directory, makes a list of all of the TA sites available.
 - __make_wig.py__ - Makes a wig file recognized by the TRANSIT software from a tabular file and a list of TA sites created using findTASites.py.
+- __labelWIGs.py__ - Using the master tag list, changes the gene names in the prot_table files into Roary tags that can be compared across all strains. Then it uses these new prot_tables to annotate the genes in the wig files. For this script to work, the prot_tables have to be named just with the name of the strain and the wig filename has to also include the strain. This script works on all prot_tables and wigs in the directory. The annotated WIGs are saved as csv files.  
+- MasterTagList.csv - A list of gene names and locations from different strains matched up using Roary (3). NCBI tags are also included, matched to the Prokka genes based on location. 
+- __permutation.py__ - Adds together the reads from all annotated wig files for a strain (file name must start with Roary_*Strain* and must be a csv) and then for each pair of strains, performs a permutation test.  
 
 ### Process
 1. Create Prot_Tables (runs on all GFFs in directory) `python make_prot_tables.py`
 2. Create TA site files (runs on all fastas in directory) `python findTASites.py`
 3. Create wig files (runs on a single fasta-tabular file pair) `python make_wig.py <XXX_TASites.txt> <XXX.tabular>`
-4. Run TRANSIT (see <https://pythonhosted.org/tnseq-transit/index.html> for more information). 
+4. Run TRANSIT (see <https://pythonhosted.org/tnseq-transit/index.html> for more information).
+5. Make sure names are compatible with labelWIGs.py and permutation.py (see file descriptions above). 
+6. Rename the genes in the Prot_Tables based on the Roary tags. `python labelWIGs.py` 
+7. Perform the permutation test. By comparing the outputs of this script to the TRANSIT outputs, you can determine which differences in gene essentiality identified by TRANSIT are significant.  `python permutation.py`
 
-REFERENCES: 
-1. DeJesus, Michael A., et al. "TRANSIT-a software tool for Himar1 TnSeq analysis." PLoS computational biology 11.10 (2015): e1004401.
-2. Seemann, Torsten. "Prokka: rapid prokaryotic genome annotation." Bioinformatics 30.14 (2014): 2068-2069. 
+## REFERENCES: 
+1. DeJesus, Michael A., et al. "TRANSIT-a software tool for Himar1 TnSeq analysis." *PLoS computational biology* 11.10 (2015): e1004401.
+2. Seemann, Torsten. "Prokka: rapid prokaryotic genome annotation." *Bioinformatics* 30.14 (2014): 2068-2069. 
+3. Andrew J. Page, Carla A. Cummins, Martin Hunt, Vanessa K. Wong, Sandra Reuter, Matthew T. G. Holden, Maria Fookes, Daniel Falush, Jacqueline A. Keane, Julian Parkhill, "Roary: Rapid large-scale prokaryote pan genome analysis", *Bioinformatics*, 2015;31(22):3691-3693 
