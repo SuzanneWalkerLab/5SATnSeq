@@ -68,7 +68,7 @@ We compared gene fitness in daptomycin-treated Tn-Seq library samples to untreat
 3. Run the Mann-Whitney U and upregulation analyses `python TnSeq_Driver.py`
 
 ### Outputs
-1. __*.igv__ - IGV files that list the reads at each TA dinucleotide site. Tab-delimited. No heading. Columns are 1. Accession number, 2. TA start, 3. TA stop, 4. Total reads, 5. Gene, 6. Plus strand reads, 7. Minus strand reads, 8. Gene strand, 9. Description, 10. Copy (If a TA site appears in multiple genes, it will have multiple entries in the table. 
+1. __*.igv__ - IGV files that list the reads at each TA dinucleotide site. Tab-delimited. No heading. Columns are 1. Accession number, 2. TA start, 3. TA stop, 4. Total reads, 5. Gene, 6. Plus strand reads, 7. Minus strand reads, 8. Gene strand, 9. Description, 10. Copy (If a TA site appears in multiple genes, it will have multiple entries in the table). 
 2. __HitCounts.csv__ - A file that lists the reads in each IGV file, the number of TA sites with reads, and the percent of TA sites with reads. 
 3. __MWU*.csv__ - The output of the Mann-Whitney U tests. Hits are found by filtering the genes based on the q-value, read ratio, and number of reads (see manuscript for more details). 
 4. __UPREG*.csv__ - The output of the Upregulation tests. Hits are those with a YES in the Upreg column (see manuscript for more details). 
